@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, ShieldAlert, Search, Copy, CheckCircle, XCircle } from "lucide-react";
+import UserSearch from "./UserSearch";
 
 export default function ScamAlert() {
     return (
@@ -13,19 +14,33 @@ export default function ScamAlert() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-16"
+                    className="text-center mb-12"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 mb-6">
                         <AlertTriangle className="w-5 h-5 text-red-500 animate-pulse" />
+                        <span className="text-sm font-bold text-red-400">Проверка Игрока</span>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-black mb-6 text-foreground">
+                        ОПРЕДЕЛИ <span className="text-red-500">СКАМЕРА</span> ЗА СЕКУНДУ
+                    </h2>
+
+                    <UserSearch />
+                </motion.div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-16 mt-24"
+                >
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 mb-6">
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
                         <span className="text-sm font-bold text-red-400">Способы скама</span>
                     </div>
-                    <h2 className="text-4xl md:text-6xl font-black mb-6 text-foreground">
-                        НЕ ДАЙ СЕБЯ <br />
-                        <span className="text-red-500">ЗАСКАМИТЬ</span>
+                    <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground text-center">
+                        КАК РАБОТАЮТ МОШЕННИКИ?
                     </h2>
-                    <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-                        Данная ветка создана в целях обезопасить Вас, рассказать все скам схемы и как не попасться на мошенников!
-                    </p>
                 </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
