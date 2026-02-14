@@ -23,23 +23,23 @@ export default function Modal({ isOpen, onClose, title, children }) {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="relative w-full max-w-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden glass"
+                        className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl overflow-hidden glass"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-white/10">
+                        <div className="flex items-center justify-between p-6 border-b border-border">
                             <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                                 {title}
                             </h3>
                             <button
                                 onClick={onClose}
-                                className="p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors text-zinc-500 dark:text-zinc-400"
+                                className="p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground"
                             >
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         {/* Body */}
-                        <div className="p-6 max-h-[70vh] overflow-y-auto text-zinc-600 dark:text-zinc-300 leading-relaxed scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+                        <div className="p-6 max-h-[70vh] overflow-y-auto text-muted-foreground leading-relaxed scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
                             {children}
                         </div>
                     </motion.div>

@@ -35,54 +35,62 @@
 /* Base Variables - Light Mode Default */
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
+  --foreground: #000000;
 
   --primary: #7c3aed;
   /* Slightly darker violet for light mode contrast */
   --primary-foreground: #ffffff;
-
   --secondary: #059669;
   /* Darker emerald */
   --secondary-foreground: #ffffff;
-
-  --muted: #f4f4f5;
-  /* Zinc-100 */
-  --muted-foreground: #71717a;
-  /* Zinc-500 */
-
+  --muted: #f5f5f5;
+  /* Very light gray for subtle separation, not black */
+  --muted-foreground: #404040;
+  /* Dark gray for secondary text */
   --accent: #c026d3;
   /* Darker fuchsia */
   --accent-foreground: #ffffff;
+  --card: #ffffff;
+  --border: #e5e5e5;
 }
 
 /* Dark Mode Overrides */
 .dark {
-  --background: #0a0a0a;
+  --background: #000000;
   --foreground: #ffffff;
 
   --primary: #8b5cf6;
   --primary-foreground: #ffffff;
-
   --secondary: #10b981;
   --secondary-foreground: #ffffff;
-
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-
+  --muted: #1a1a1a;
+  /* Very dark gray, almost black */
+  --muted-foreground: #a3a3a3;
+  /* Light gray for secondary text */
   --accent: #d946ef;
   --accent-foreground: #ffffff;
+  --card: #000000;
+  --border: #333333;
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground antialiased transition-colors duration-300;
+    @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Global Transition for Smoothness */
+  *,
+  *::before,
+  *::after {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 dark:bg-white/5 backdrop-blur-lg border border-zinc-200 dark:border-white/10 shadow-xl;
+    /* More transparent to respect the background color */
+    @apply bg-white/80 dark:bg-black/80 backdrop-blur-md border border-black/5 dark:border-white/10;
   }
 
   .neon-text {
@@ -100,9 +108,9 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-zinc-100 dark:bg-zinc-900;
+  @apply bg-white dark:bg-black;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-zinc-300 dark:bg-zinc-700 rounded-full hover:bg-zinc-400 dark:hover:bg-zinc-600;
+  @apply bg-neutral-300 dark:bg-neutral-800 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 border-2 border-white dark:border-black;
 }

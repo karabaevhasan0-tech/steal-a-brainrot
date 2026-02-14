@@ -26,11 +26,11 @@ const features = [
 
 export default function Features() {
     return (
-        <section id="features" className="py-24 relative bg-zinc-50 dark:bg-black/50 transition-colors duration-300">
+        <section id="features" className="py-24 relative bg-background transition-colors duration-300">
             <div className="max-w-6xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Функции Чата</h2>
-                    <p className="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+                    <p className="text-muted-foreground max-w-2xl mx-auto">
                         Все что нужно для комфортного общения и трейдинга в одном месте.
                     </p>
                 </div>
@@ -49,8 +49,8 @@ export default function Features() {
                             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                                 <feature.icon className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
                             </div>
-                            <h3 className="text-xl font-bold mb-2 text-zinc-900 dark:text-white">{feature.title}</h3>
-                            <p className="text-zinc-600 dark:text-zinc-500 text-sm leading-relaxed">
+                            <h3 className="text-xl font-bold mb-2 text-foreground">{feature.title}</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">
                                 {feature.description}
                             </p>
                         </motion.div>

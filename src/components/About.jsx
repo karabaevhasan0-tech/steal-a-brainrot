@@ -3,7 +3,7 @@ import { Users, Sparkles, Zap } from "lucide-react";
 
 export default function About() {
     return (
-        <section id="about" className="py-24 relative overflow-hidden bg-zinc-50 dark:bg-zinc-900/50 transition-colors duration-300">
+        <section id="about" className="py-24 relative overflow-hidden bg-background transition-colors duration-300">
             {/* Background Decor */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 -translate-y-1/2" />
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 translate-y-1/2" />
@@ -25,18 +25,18 @@ export default function About() {
                                 <span className="text-primary">Steal a Brainrot</span>
                             </h2>
 
-                            <p className="text-zinc-600 dark:text-zinc-400 text-lg mb-6 leading-relaxed">
+                            <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
                                 Мы — самое быстрорастущее сообщество по Roblox в Telegram. Наша цель — объединить игроков, трейдеров и любителей бреинрота в одном месте.
                             </p>
 
-                            <p className="text-zinc-600 dark:text-zinc-400 text-lg mb-8 leading-relaxed">
+                            <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
                                 Здесь нет скучных правил. Мы создаем хаос, веселье и возможности для каждого. От новичка до про-трейдера — здесь каждый найдет свой сквад.
                             </p>
 
                             <div className="grid grid-cols-2 gap-6">
-                                <div className="p-4 rounded-xl bg-white dark:bg-white/5 border border-zinc-200 dark:border-white/10 dark:border-white/5 shadow-sm dark:shadow-none">
+                                <div className="p-4 rounded-xl bg-card border border-border shadow-sm dark:shadow-none">
                                     <h4 className="text-3xl font-bold text-accent mb-1">24/7</h4>
-                                    <p className="text-sm text-zinc-600 dark:text-zinc-500">Актив</p>
+                                    <p className="text-sm text-muted-foreground">Актив</p>
                                 </div>
                             </div>
                         </motion.div>
@@ -49,15 +49,15 @@ export default function About() {
                             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8 }}
-                            className="relative z-10 p-8 rounded-3xl glass neon-box rotate-3 hover:rotate-0 transition-transform duration-500 bg-white/80 dark:bg-white/10"
+                            className="relative z-10 p-8 rounded-3xl glass neon-box rotate-3 hover:rotate-0 transition-transform duration-500 bg-card/80"
                         >
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center">
                                     <Sparkles className="text-white w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-xl text-zinc-900 dark:text-white">Элита Роблокса</h3>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Только лучшие</p>
+                                    <h3 className="font-bold text-xl text-foreground">Элита Роблокса</h3>
+                                    <p className="text-xs text-muted-foreground">Только лучшие</p>
                                 </div>
                             </div>
 
@@ -67,9 +67,9 @@ export default function About() {
                                     { icon: Users, text: "Дружные админы", color: "text-green-400" },
                                     { icon: Sparkles, text: "Уникальный вайб", color: "text-purple-400" }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-zinc-100 dark:bg-black/20">
+                                    <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted">
                                         <item.icon className={`w-5 h-5 ${item.color}`} />
-                                        <span className="font-medium text-zinc-800 dark:text-zinc-200">{item.text}</span>
+                                        <span className="font-medium text-foreground">{item.text}</span>
                                     </div>
                                 ))}
                             </div>

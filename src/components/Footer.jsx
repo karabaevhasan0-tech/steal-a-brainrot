@@ -2,7 +2,7 @@ import { MessageCircle } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="py-12 border-t border-white/10 bg-black dark:bg-black bg-zinc-100 dark:border-white/10 border-black/10 transition-colors duration-300">
+        <footer className="py-12 border-t border-border bg-muted transition-colors duration-300">
             <div className="max-w-6xl mx-auto px-6 flex flex-col items-center gap-8">
                 <div className="flex flex-col md:flex-row items-center justify-between w-full gap-6">
                     <div className="flex items-center gap-2">
@@ -18,11 +18,11 @@ export default function Footer() {
                 </div>
 
                 <div className="w-full border-t border-white/10 pt-8 text-center">
-                    <p className="text-zinc-500 text-sm mb-4">© {new Date().getFullYear()} Steal a Brainrot. Все права защищены.</p>
+                    <p className="text-muted-foreground text-sm mb-4">© {new Date().getFullYear()} Steal a Brainrot. Все права защищены.</p>
 
                     {/* Creator Credit - HUGE */}
-                    <div className="p-6 rounded-2xl bg-zinc-900 border border-zinc-800 shadow-xl inline-block">
-                        <p className="text-zinc-400 text-sm mb-2 uppercase tracking-widest font-bold">Сайт разработан создателем чата</p>
+                    <div className="p-6 rounded-2xl bg-card border border-border shadow-xl inline-block">
+                        <p className="text-muted-foreground text-sm mb-2 uppercase tracking-widest font-bold">Сайт разработан создателем чата</p>
                         <a
                             href="https://t.me/Karabaev_Hasan"
                             target="_blank"

@@ -22,13 +22,13 @@ export default function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100/80 dark:bg-white/5 border border-zinc-200 dark:border-white/10 mb-8 backdrop-blur-sm">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-background/80 border border-border mb-8 backdrop-blur-sm">
                         <Sparkles className="w-4 h-4 text-primary dark:text-yellow-400" />
-                        <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">#1 Roblox Brainrot Сообщество</span>
+                        <span className="text-sm font-medium text-muted-foreground">#1 Roblox Brainrot Сообщество</span>
                     </div>
 
                     <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight">
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 via-zinc-700 to-zinc-500 dark:from-white dark:via-zinc-200 dark:to-zinc-500">
+                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-foreground via-muted-foreground to-muted-foreground">
                             Steal a
                         </span>
                         <br />
@@ -37,7 +37,7 @@ export default function Hero() {
                         </span>
                     </h1>
 
-                    <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
                         Где хаос встречается с комьюнити. Вступай в самый элитный чат по Roblox для общения и трейдов в Telegram.
                     </p>
 
@@ -75,8 +75,8 @@ export default function Hero() {
                             className="p-6 rounded-2xl bg-white/60 dark:bg-white/5 border border-zinc-200 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-colors backdrop-blur-md shadow-lg dark:shadow-none"
                         >
                             <item.icon className={`w-10 h-10 mb-4 mx-auto ${item.color}`} />
-                            <h3 className="text-xl font-bold mb-2 text-zinc-900 dark:text-white">{item.title}</h3>
-                            <p className="text-zinc-600 dark:text-zinc-500 text-sm">Лучшее общение в реальном времени.</p>
+                            <h3 className="text-xl font-bold mb-2 text-foreground">{item.title}</h3>
+                            <p className="text-muted-foreground text-sm">Лучшее общение в реальном времени.</p>
                         </motion.div>
                     ))}
                 </div>
@@ -97,7 +97,7 @@ export default function Hero() {
                     </p>
 
                     <div className="py-4">
-                        <h4 className="font-bold text-lg mb-2 text-zinc-800 dark:text-zinc-200">Что ты получишь?</h4>
+                        <h4 className="font-bold text-lg mb-2 text-foreground">Что ты получишь?</h4>
                         <ul className="space-y-2">
                             {[
                                 "🔥 Эксклюзивные трейды и сделки",
@@ -113,7 +113,7 @@ export default function Hero() {
                         </ul>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-zinc-100 dark:bg-black/20 border border-zinc-200 dark:border-white/5">
+                    <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
                         <p className="text-sm italic text-center">
                             "Единственное место в Telegram, где твои петы в Adopt Me действительно в безопасности."
                         </p>

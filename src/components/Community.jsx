@@ -8,7 +8,7 @@ export default function Community() {
     };
 
     return (
-        <section id="community" className="py-24 relative overflow-hidden bg-black">
+        <section id="community" className="py-24 relative overflow-hidden bg-background">
             {/* Background Gradients */}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
 
@@ -19,16 +19,16 @@ export default function Community() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10 mb-8 shadow-sm dark:shadow-none">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border mb-8 shadow-sm dark:shadow-none">
                         <Heart className="w-4 h-4 text-red-500 animate-pulse" />
-                        <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Любовь и Хаос</span>
+                        <span className="text-sm font-medium text-muted-foreground">Любовь и Хаос</span>
                     </div>
 
                     <h2 className="text-5xl md:text-7xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary">
                         Больше, чем просто чат.
                     </h2>
 
-                    <p className="text-xl md:text-2xl text-zinc-600 dark:text-zinc-400 mb-12 leading-relaxed max-w-2xl mx-auto">
+                    <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-2xl mx-auto">
                         Здесь мы не просто общаемся. Мы создаем тренды, ломаем экономику игр и угараем 24/7.
                         Если ты не с нами — ты пропускаешь весь движ.
                     </p>

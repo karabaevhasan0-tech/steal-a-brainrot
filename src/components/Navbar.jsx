@@ -1,26 +1,43 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, User, LogOut, Menu, X } from "lucide-react";
+import { MessageCircle, User, LogOut, Menu, X, Sun, Moon } from "lucide-react";
 import Button from "./Button";
 import { cn } from "../lib/utils";
 
 export default function Navbar() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("brainrot_user"));
+    const [username, setUsername] = useState(() => localStorage.getItem("brainrot_user") || "");
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("");
 
-    useEffect(() => {
-        // Auth Check
-        const storedUser = localStorage.getItem("brainrot_user");
-        if (storedUser) {
-            setIsLoggedIn(true);
-            setUsername(storedUser);
+    // Theme State
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('brainrot_theme');
+            if (saved) {
+                return saved === 'dark';
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
+        return true; // Default to dark
+    });
 
-        // Theme Check - Enforce Dark
-        document.documentElement.classList.add("dark");
+    useEffect(() => {
+        const root = window.document.documentElement;
+        if (isDarkMode) {
+            root.classList.add('dark');
+            localStorage.setItem('brainrot_theme', 'dark');
+        } else {
+            root.classList.remove('dark');
+            localStorage.setItem('brainrot_theme', 'light');
+        }
+    }, [isDarkMode]);
 
+    const toggleTheme = () => {
+        setIsDarkMode(!isDarkMode);
+    };
+
+    useEffect(() => {
         // Scroll Spy / Active Section Observer (BoundingRect Logic)
         const handleScroll = () => {
             // Correct Order based on App.jsx
@@ -127,6 +144,14 @@ export default function Navbar() {
                         )}
                     </a>
 
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full hover:bg-muted dark:hover:bg-muted transition-colors text-foreground"
+                        aria-label="Toggle Theme"
+                    >
+                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
 
                     <AnimatePresence mode="wait">
                         {isLoggedIn ? (
@@ -143,7 +168,7 @@ export default function Navbar() {
                                 </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="p-1 hover:bg-white/10 rounded-full transition-colors text-zinc-400 hover:text-red-400"
+                                    className="p-1 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-red-400"
                                 >
                                     <LogOut className="w-4 h-4" />
                                 </button>
@@ -163,8 +188,14 @@ export default function Navbar() {
                     </AnimatePresence>
                 </div>
 
-                {/* Mobile Menu Toggle */}
+                {/* Mobile Menu Toggle & Theme */}
                 <div className="flex items-center gap-4 md:hidden">
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full hover:bg-muted dark:hover:bg-muted transition-colors text-foreground"
+                    >
+                        {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
 
                     <button
                         className="text-foreground"

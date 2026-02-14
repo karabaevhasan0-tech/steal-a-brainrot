@@ -27,14 +27,14 @@ const faqData = [
 
 export default function FAQ() {
     return (
-        <section id="faq" className="py-24 relative bg-black">
+        <section id="faq" className="py-24 relative bg-background">
             <div className="max-w-3xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-5xl font-bold mb-4 flex items-center justify-center gap-3">
                         <HelpCircle className="text-primary w-10 h-10" />
                         Частые Вопросы
                     </h2>
-                    <p className="text-zinc-400">Всё, что ты хотел узнать, но боялся спросить.</p>
+                    <p className="text-muted-foreground">Всё, что ты хотел узнать, но боялся спросить.</p>
                 </div>
 
                 <div className="space-y-4">
@@ -55,15 +55,15 @@ function FAQItem({ item }) {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="border border-white/10 rounded-2xl overflow-hidden bg-zinc-900/50"
+            className="border border-border rounded-2xl overflow-hidden bg-card"
         >
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-6 text-left hover:bg-white/5 transition-colors"
             >
-                <span className="text-lg font-bold text-zinc-200">{item.question}</span>
+                <span className="text-lg font-bold text-foreground">{item.question}</span>
                 <ChevronDown
-                    className={`w-5 h-5 text-zinc-400 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                    className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
                 />
             </button>
             <AnimatePresence>
@@ -74,7 +74,7 @@ function FAQItem({ item }) {
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="p-6 pt-0 text-zinc-400 leading-relaxed whitespace-pre-line">
+                        <div className="p-6 pt-0 text-muted-foreground leading-relaxed whitespace-pre-line">
                             {item.answer}
                         </div>
                     </motion.div>
