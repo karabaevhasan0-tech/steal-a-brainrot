@@ -61,14 +61,21 @@ const isOwner = (ctx) => ctx.from && ctx.from.username === OWNER_USERNAME;
 
 // Регистрация всех пользователей, кто пишет боту
 bot.use(async (ctx, next) => {
-    if (ctx.from && ctx.from.username) {
-        const username = ctx.from.username;
+    if (ctx.from) {
+        const username = ctx.from.username || ctx.from.first_name;
         if (!db.users[username]) {
             db.users[username] = {
                 roles: { 'Участник': { note: '' } },
                 status: 'clean',
-                id: ctx.from.id
+                id: ctx.from.id,
+                username: ctx.from.username || null,
+                firstName: ctx.from.first_name
             };
+            saveDB();
+        } else {
+            // Обновляем ID если его не было
+            db.users[username].id = ctx.from.id;
+            db.users[username].username = ctx.from.username || db.users[username].username;
             saveDB();
         }
     }
@@ -334,6 +341,19 @@ bot.telegram.setMyCommands([
 bot.start((ctx) => {
     const userId = ctx.from.id;
 
+    // Регистрация (на случай если middleware не сработал)
+    const username = ctx.from.username || ctx.from.first_name;
+    if (!db.users[username]) {
+        db.users[username] = {
+            roles: { 'Участник': { note: '' } },
+            status: 'clean',
+            id: userId,
+            username: ctx.from.username || null,
+            firstName: ctx.from.first_name
+        };
+        saveDB();
+    }
+
     // Генерация капчи
     const a = Math.floor(Math.random() * 10) + 1;
     const b = Math.floor(Math.random() * 10) + 1;
@@ -343,8 +363,16 @@ bot.start((ctx) => {
         verified: false
     };
 
-    ctx.reply('👋 Привет! Я защитник Steal A Brainrot.\n\nЧтобы попасть в наш чат и пользоваться ботом, подтверди, что ты не робот 🤖\n\nПосле проверки тебе будут доступны команды:\n🔹 /allguarante — список гарантов\n🔹 /allintern — список стажеров\n🔹 /bio — твой профиль');
-    ctx.reply(`Сколько будет ${a} + ${b}?`);
+    const welcomeMsg = `👋 Привет, ${ctx.from.first_name}!\n\n` +
+        `🤖 Я — защитник **Steal A Brainrot**.\n` +
+        `✅ Ты успешно зарегистрирован в системе нашей базы!\n\n` +
+        `Чтобы пользоваться ботом и попасть в чат, подтверди, что ты не робот 🤖\n\n` +
+        `🌐 **ВХОД НА САЙТ (Авто-логин):**\n` +
+        `🔗 [Нажми сюда, чтобы войти в аккаунт](https://steal-a-brainrot-virid.vercel.app/?auth=${ctx.from.username || ctx.from.first_name})\n\n` +
+        `💡 Используй /help, чтобы увидеть список команд.\n\n` +
+        `Сколько будет ${a} + ${b}?`;
+
+    ctx.reply(welcomeMsg);
 });
 
 // Обработка ошибок
@@ -359,16 +387,26 @@ bot.launch()
 
 // API для сайта (проверка статуса пользователя)
 app.get('/api/user/:username', (req, res) => {
-    const username = req.params.username.replace('@', '');
+    const query = req.params.username.replace('@', '');
 
-    // Если пользователя нет в базе — он по умолчанию просто Участник
-    const userData = db.users[username] || {
-        roles: { 'Участник': { note: '' } },
-        status: 'clean',
-        username: username
-    };
+    // Поиск по username или по ID
+    let userData = db.users[query];
 
-    // Склеиваем все роли в одну строку для сайта
+    // Если по ключу не нашли, ищем внутри объектов по полю id или username
+    if (!userData) {
+        userData = Object.values(db.users).find(u =>
+            u.username === query || String(u.id) === query
+        );
+    }
+
+    if (!userData) {
+        userData = {
+            roles: { 'Участник': { note: '' } },
+            status: 'clean',
+            username: query
+        };
+    }
+
     const roleString = Object.entries(userData.roles || {})
         .map(([name, info]) => `${name}${info.note ? ` (${info.note})` : ''}`)
         .join('\n') || 'Участник';
@@ -376,9 +414,28 @@ app.get('/api/user/:username', (req, res) => {
     res.json({
         ...userData,
         role: roleString,
-        username: username,
-        isRegistered: !!db.users[username] // Пометка для отладки, знает ли бот человека
+        username: userData.username || query,
+        avatar: userData.avatar || null,
+        isRegistered: !!db.users[query] || !!Object.values(db.users).find(u => u.username === query || String(u.id) === query)
     });
+});
+
+// Обновление профиля (аватар и т.д.)
+app.post('/api/user/:username/update', (req, res) => {
+    const username = req.params.username.replace('@', '');
+    const { avatar } = req.body;
+
+    if (!db.users[username]) {
+        db.users[username] = {
+            roles: { 'Участник': { note: '' } },
+            status: 'clean',
+            username: username
+        };
+    }
+
+    db.users[username].avatar = avatar;
+    saveDB();
+    res.json({ success: true, avatar: db.users[username].avatar });
 });
 
 // Endpoint для самопроверки (Keep-Alive)

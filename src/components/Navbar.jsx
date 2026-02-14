@@ -1,10 +1,35 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, LogOut, Menu, X, Sun, Moon, User } from "lucide-react";
+import {
+    MessageCircle, LogOut, Menu, X, Sun, Moon, User,
+    Flame, Sparkles, Zap, Ghost, Rocket, Crown, Flower2, Heart, Cherry, Leaf
+} from "lucide-react";
 import Button from "./Button";
 import { cn } from "../lib/utils";
 import LoginModal from "./LoginModal";
 import ProfileModal from "./ProfileModal";
+
+const UserAvatar = ({ user, className }) => {
+    if (!user) return null;
+    const avatarData = user.avatar ? JSON.parse(user.avatar) : null;
+
+    if (user.photo_url && !avatarData) {
+        return <img src={user.photo_url} alt={user.first_name} className={cn("rounded-full object-cover", className)} />;
+    }
+
+    const icons = { sparkles: Sparkles, flame: Flame, zap: Zap, ghost: Ghost, rocket: Rocket, crown: Crown, flower: Flower2, heart: Heart, cherry: Cherry, moon: Moon, sun: Sun, leaf: Leaf };
+    const colors = { blue: 'text-blue-500 bg-blue-500/20', purple: 'text-purple-500 bg-purple-500/20', red: 'text-red-500 bg-red-500/20', green: 'text-green-500 bg-green-500/20', yellow: 'text-yellow-500 bg-yellow-500/20', pink: 'text-pink-500 bg-pink-500/20' };
+
+    const data = avatarData || { icon: 'sparkles', color: 'blue' };
+    const Icon = icons[data.icon] || User;
+    const colorClass = colors[data.color] || colors.blue;
+
+    return (
+        <div className={cn("rounded-xl flex items-center justify-center border border-white/10", colorClass, className)}>
+            <Icon className="w-[60%] h-[60%]" />
+        </div>
+    );
+};
 
 export default function Navbar() {
     const [user, setUser] = useState(() => {
@@ -18,6 +43,22 @@ export default function Navbar() {
     const [activeSection, setActiveSection] = useState("");
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+    // Автоматическое обновление данных и вход по ссылке
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authId = urlParams.get('auth');
+
+        if (authId) {
+            // Если есть auth в ссылке — входим автоматически
+            handleTelegramAuth({ username: authId, first_name: authId });
+            // Убираем параметр из URL для красоты
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (user) {
+            // Если уже залогинены — обновляем данные
+            handleTelegramAuth(user);
+        }
+    }, []);
 
     // Theme State
     const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -83,7 +124,8 @@ export default function Navbar() {
 
         try {
             // Fetch role/status from our bot API
-            const response = await fetch(`http://localhost:3001/api/user/${userData.username || userData.first_name}`);
+            const username = userData.username || userData.first_name;
+            const response = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}`);
             const apiData = await response.json();
 
             // Merge Telegram data with our Bot DB data
@@ -187,19 +229,9 @@ export default function Navbar() {
                                     className="flex items-center gap-3 bg-muted/50 pl-2 pr-4 py-1.5 rounded-full border border-border cursor-pointer hover:bg-muted/80 transition-all"
                                     onClick={() => setIsProfileModalOpen(true)}
                                 >
-                                    {user.photo_url ? (
-                                        <img
-                                            src={user.photo_url}
-                                            alt={user.first_name}
-                                            className="w-8 h-8 rounded-full border border-primary/20"
-                                        />
-                                    ) : (
-                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                            <User className="w-4 h-4 text-primary" />
-                                        </div>
-                                    )}
+                                    <UserAvatar user={user} className="w-8 h-8 rounded-[10px]" />
                                     <span className="font-medium text-sm text-foreground">
-                                        {user.first_name}
+                                        {user.username ? `@${user.username}` : user.first_name}
                                     </span>
                                     <button
                                         onClick={handleLogout}
@@ -274,18 +306,10 @@ export default function Navbar() {
                                                 setIsMenuOpen(false);
                                             }}
                                         >
-                                            {user.photo_url ? (
-                                                <img
-                                                    src={user.photo_url}
-                                                    alt={user.first_name}
-                                                    className="w-8 h-8 rounded-full border border-primary/20"
-                                                />
-                                            ) : (
-                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                                    <User className="w-4 h-4 text-primary" />
-                                                </div>
-                                            )}
-                                            <span className="font-mono text-accent">{user.first_name}</span>
+                                            <UserAvatar user={user} className="w-9 h-9 rounded-xl" />
+                                            <span className="font-mono text-accent">
+                                                {user.username ? `@${user.username}` : user.first_name}
+                                            </span>
                                         </div>
                                         <Button onClick={(e) => { handleLogout(e); setIsMenuOpen(false); }} variant="ghost" className="text-red-400">Выйти</Button>
                                     </div>
@@ -319,6 +343,7 @@ export default function Navbar() {
                 isOpen={isProfileModalOpen}
                 onClose={() => setIsProfileModalOpen(false)}
                 user={user}
+                onUpdate={setUser}
             />
         </>
     );

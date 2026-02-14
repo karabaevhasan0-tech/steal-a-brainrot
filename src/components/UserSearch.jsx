@@ -1,7 +1,43 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShieldAlert, UserCheck, Shield, User, Loader2 } from "lucide-react";
+import {
+    Search, ShieldAlert, UserCheck, Shield, User, Loader2,
+    Flame, Sparkles, Zap, Ghost, Rocket, Crown, Flower2, Heart, Cherry, Moon, Sun, Leaf
+} from "lucide-react";
 import { cn } from "../lib/utils";
+
+const ResultAvatar = ({ result }) => {
+    const avatarData = result.avatar ? JSON.parse(result.avatar) : null;
+
+    if (avatarData) {
+        const icons = { sparkles: Sparkles, flame: Flame, zap: Zap, ghost: Ghost, rocket: Rocket, crown: Crown, flower: Flower2, heart: Heart, cherry: Cherry, moon: Moon, sun: Sun, leaf: Leaf };
+        const colors = { blue: 'text-blue-500 bg-blue-500/20', purple: 'text-purple-500 bg-purple-500/20', red: 'text-red-500 bg-red-500/20', green: 'text-green-500 bg-green-500/20', yellow: 'text-yellow-500 bg-yellow-500/20', pink: 'text-pink-500 bg-pink-500/20' };
+
+        const Icon = icons[avatarData.icon] || User;
+        const colorClass = colors[avatarData.color] || colors.blue;
+
+        return (
+            <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 border border-white/5", colorClass)}>
+                <Icon className="w-8 h-8" />
+            </div>
+        );
+    }
+
+    return (
+        <div className={cn(
+            "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0",
+            result.status === 'scammer' ? "bg-red-500/20" : "bg-primary/20"
+        )}>
+            {result.status === 'scammer' ? (
+                <ShieldAlert className="w-8 h-8 text-red-500" />
+            ) : result.role && result.role.includes('Гарант') ? (
+                <Shield className="w-8 h-8 text-primary" />
+            ) : (
+                <UserCheck className="w-8 h-8 text-green-500" />
+            )}
+        </div>
+    );
+};
 
 export default function UserSearch() {
     const [query, setQuery] = useState("");
@@ -85,18 +121,7 @@ export default function UserSearch() {
                         )} />
 
                         <div className="flex items-center gap-6 relative z-10">
-                            <div className={cn(
-                                "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0",
-                                result.status === 'scammer' ? "bg-red-500/20" : "bg-primary/20"
-                            )}>
-                                {result.status === 'scammer' ? (
-                                    <ShieldAlert className="w-8 h-8 text-red-500" />
-                                ) : result.role === 'Гарант 🛡️' ? (
-                                    <Shield className="w-8 h-8 text-primary" />
-                                ) : (
-                                    <UserCheck className="w-8 h-8 text-green-500" />
-                                )}
-                            </div>
+                            <ResultAvatar result={result} />
 
                             <div className="flex-1 min-w-0">
                                 <h4 className="text-xl font-bold text-foreground truncate">
