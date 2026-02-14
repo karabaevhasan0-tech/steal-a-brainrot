@@ -52,31 +52,47 @@ export default function LoginModal({ isOpen, onClose, onAuth }) {
                                 <span className="text-sm">Вы подтвердили, что не являетесь роботом</span>
                             </div>
 
-                            <div className="pt-2 flex flex-col items-center gap-4">
-                                <TelegramLoginButton
-                                    botName={BOT_NAME}
-                                    onAuth={handleTelegramAuth}
-                                    className="scale-110"
-                                />
+                            <div className="pt-2 flex flex-col items-center gap-4 w-full">
+                                <a
+                                    href={`https://t.me/${BOT_NAME}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full bg-primary text-primary-foreground py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+                                >
+                                    <Send className="w-5 h-5" />
+                                    ОТКРЫТЬ БОТА
+                                </a>
+
+                                <button
+                                    onClick={() => handleTelegramAuth({
+                                        id: 12345678,
+                                        first_name: "Посетитель",
+                                        username: "guest_user",
+                                        photo_url: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${Math.random()}`
+                                    })}
+                                    className="w-full border border-border py-3 rounded-2xl text-sm font-medium hover:bg-muted/50 transition-colors"
+                                >
+                                    ПРОДОЛЖИТЬ КАК ГОСТЬ
+                                </button>
 
                                 {window.location.hostname === 'localhost' && (
                                     <button
                                         onClick={() => handleTelegramAuth({
-                                            id: 12345678,
-                                            first_name: "Тестовый Пользователь",
-                                            username: "test_user",
-                                            photo_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=test"
+                                            id: 8371175143, // ID владельца (пример)
+                                            first_name: "Hasan",
+                                            username: "Karabaev_Hasan",
+                                            photo_url: "https://api.dicebear.com/7.x/avataaars/svg?seed=Hasan"
                                         })}
                                         className="text-[10px] text-muted-foreground hover:text-primary transition-colors underline decoration-dotted"
                                     >
-                                        [Dev Only] Mock Login
+                                        [Dev Only] Login as Owner
                                     </button>
                                 )}
                             </div>
                         </div>
 
-                        <p className="text-xs text-muted-foreground italic">
-                            * После нажатия на кнопку вы будете авторизованы через официальный виджет Telegram
+                        <p className="text-[10px] text-muted-foreground italic px-4">
+                            * После перехода в бота отправьте ему команду /start, чтобы получить доступ ко всем функциям проекта.
                         </p>
                     </div>
                 )}
