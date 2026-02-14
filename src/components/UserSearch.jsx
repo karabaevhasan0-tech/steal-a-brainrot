@@ -14,13 +14,21 @@ export default function UserSearch() {
 
         setLoading(true);
         try {
-            const username = query.replace('@', '');
-            const response = await fetch(`http://localhost:3001/api/user/${username}`);
+            const username = query.replace('@', '').trim();
+            if (!username) {
+                setResult({ error: "Введите корректный юзернейм" });
+                setLoading(false);
+                return;
+            }
+
+            const response = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}`);
+            if (!response.ok) throw new Error("Server error");
+
             const data = await response.json();
             setResult(data);
         } catch (error) {
             console.error("Search error:", error);
-            setResult({ error: "Не удалось получить данные от бота" });
+            setResult({ error: "Не удалось подключиться к боту. Убедитесь, что бот запущен." });
         } finally {
             setLoading(false);
         }
