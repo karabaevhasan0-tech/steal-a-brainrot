@@ -380,10 +380,18 @@ bot.catch((err, ctx) => {
     console.error(`Ошибка для ${ctx.updateType}:`, err);
 });
 
-// Запуск бота
-bot.launch()
-    .then(() => console.log('🤖 Бот запущен!'))
-    .catch((err) => console.error('Ошибка запуска бота:', err));
+// Запуск бота (Webhooks для Render, Polling для локалки)
+const URL = process.env.RENDER_EXTERNAL_URL || '';
+
+if (URL) {
+    bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
+    app.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
+    console.log('📡 Бот запущен через Webhooks (Render Mode)');
+} else {
+    bot.launch()
+        .then(() => console.log('🤖 Бот запущен локально (Polling Mode)'))
+        .catch((err) => console.error('Ошибка запуска бота:', err));
+}
 
 // API для сайта (проверка статуса пользователя)
 app.get('/api/user/:username', (req, res) => {
