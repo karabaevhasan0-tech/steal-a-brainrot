@@ -125,7 +125,7 @@ export default function Navbar() {
         try {
             // Fetch role/status from our bot API
             const username = userData.username || userData.first_name;
-            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
             const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
             const apiData = await response.json();
 

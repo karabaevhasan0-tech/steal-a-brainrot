@@ -57,7 +57,7 @@ export default function UserSearch() {
                 return;
             }
 
-            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
             const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
             if (!response.ok) throw new Error("Server error");
 

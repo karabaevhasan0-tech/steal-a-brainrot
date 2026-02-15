@@ -58,7 +58,7 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
         const avatarData = JSON.stringify(avatarObj);
 
         try {
-            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
             const username = user.username || user.first_name;
             const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}/update`, {
                 method: 'POST',
@@ -68,7 +68,7 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
 
             if (response.ok) {
                 // Получаем свежие данные с сервера после обновления аватара
-                const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+                const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
                 const refreshRes = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
                 const apiData = await refreshRes.json();
 

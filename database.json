@@ -170,9 +170,9 @@
   },
   "captcha": {
     "8371175143": {
-      "q": "7 + 10",
-      "answer": 17,
-      "verified": true
+      "q": "2 + 1",
+      "answer": 3,
+      "verified": false
     }
   }
 }
