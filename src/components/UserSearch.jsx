@@ -57,7 +57,8 @@ export default function UserSearch() {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}`);
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+            const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
             if (!response.ok) throw new Error("Server error");
 
             const data = await response.json();

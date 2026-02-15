@@ -11,12 +11,16 @@
       },
       "status": "clean",
       "id": 8371175143,
-      "username": "Karabaev_Hasan"
+      "username": "Karabaev_Hasan",
+      "avatar": "{\"icon\":\"flame\",\"color\":\"red\"}"
     },
     "amirkhon0501": {
       "roles": {
         "Стажер 🐣": {
           "note": "до 500 рублей"
+        },
+        "Гарант 🛡️": {
+          "note": "до 1500₽"
         }
       },
       "status": "clean"
@@ -30,12 +34,144 @@
       "status": "clean",
       "username": "guest_user",
       "avatar": "{\"icon\":\"flame\",\"color\":\"green\"}"
+    },
+    "Платон": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8493109715,
+      "username": null,
+      "firstName": "Платон"
+    },
+    "tom0k": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8293867372,
+      "username": "tom0k",
+      "firstName": "gg"
+    },
+    "ddsspq": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 7299001565,
+      "username": "ddsspq",
+      "firstName": "Хх"
+    },
+    "giftmarkerr": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8437471726,
+      "username": "giftmarkerr",
+      "firstName": "marker [11:00-23:59]"
+    },
+    "X_Rodik_X": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 5148144563,
+      "username": "X_Rodik_X",
+      "firstName": "funter^_^"
+    },
+    "bankiser": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8491451326,
+      "username": "bankiser",
+      "firstName": "Danu"
+    },
+    "sosal_trol": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 7955722159,
+      "username": "sosal_trol",
+      "firstName": "артём венов @uk_venov"
+    },
+    "chestniy_kibr": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 7119277048,
+      "username": "chestniy_kibr",
+      "firstName": "#𝐅𝐞𝐫𝐮𝐳"
+    },
+    "egor1978": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 728580093,
+      "username": "egor1978",
+      "firstName": "Egor"
+    },
+    "Ygjsych": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 7452290300,
+      "username": "Ygjsych",
+      "firstName": "Сол"
+    },
+    "vksvitovsky": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8545119483,
+      "username": "vksvitovsky",
+      "firstName": "Svitovsky"
+    },
+    "waterstork": {
+      "roles": {
+        "Участник": {
+          "note": ""
+        }
+      },
+      "status": "clean",
+      "id": 8430914246,
+      "username": "waterstork",
+      "firstName": "ᅠ"
     }
   },
   "captcha": {
     "8371175143": {
-      "q": "5 + 3",
-      "answer": 8,
+      "q": "7 + 10",
+      "answer": 17,
       "verified": true
     }
   }

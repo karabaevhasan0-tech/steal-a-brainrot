@@ -125,7 +125,8 @@ export default function Navbar() {
         try {
             // Fetch role/status from our bot API
             const username = userData.username || userData.first_name;
-            const response = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}`);
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+            const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
             const apiData = await response.json();
 
             // Merge Telegram data with our Bot DB data

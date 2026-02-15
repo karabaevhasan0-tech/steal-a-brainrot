@@ -58,8 +58,9 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
         const avatarData = JSON.stringify(avatarObj);
 
         try {
+            const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
             const username = user.username || user.first_name;
-            const response = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}/update`, {
+            const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ avatar: avatarData })
@@ -67,7 +68,8 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
 
             if (response.ok) {
                 // Получаем свежие данные с сервера после обновления аватара
-                const refreshRes = await fetch(`http://localhost:3001/api/user/${encodeURIComponent(username)}`);
+                const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+                const refreshRes = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
                 const apiData = await refreshRes.json();
 
                 const newData = { ...user, ...apiData };
