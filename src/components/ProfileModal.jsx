@@ -59,8 +59,8 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
 
         try {
             const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
-            const username = user.username || user.first_name;
-            const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}/update`, {
+            const query = user.id || (user.username ? `@${user.username}` : `@${user.first_name}`);
+            const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(query)}/update`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ avatar: avatarData })
@@ -68,8 +68,7 @@ export default function ProfileModal({ isOpen, onClose, user, onUpdate }) {
 
             if (response.ok) {
                 // Получаем свежие данные с сервера после обновления аватара
-                const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
-                const refreshRes = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
+                const refreshRes = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(query)}`);
                 const apiData = await refreshRes.json();
 
                 const newData = { ...user, ...apiData };

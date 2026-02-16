@@ -50,13 +50,13 @@ export default function UserSearch() {
 
         setLoading(true);
         try {
-            const username = query.replace('@', '').trim();
-            if (!username) {
-                setResult({ error: "Введите корректный юзернейм" });
+            if (!query.startsWith('@')) {
+                setResult({ error: "Юзернейм должен начинаться с @" });
                 setLoading(false);
                 return;
             }
 
+            const username = query.trim();
             const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
             const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
             if (!response.ok) throw new Error("Server error");

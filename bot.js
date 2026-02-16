@@ -154,19 +154,22 @@ bot.command('igiveout', (ctx) => {
 
 // Команда /bio
 bot.command('bio', (ctx) => {
-    const text = ctx.message.text.split(' ');
+    const args = ctx.message.text.split(' ');
     let targetUsername;
 
     if (ctx.message.reply_to_message) {
         targetUsername = ctx.message.reply_to_message.from.username;
-    } else if (text.length > 1) {
-        targetUsername = text[1].replace('@', '');
+    } else if (args.length > 1) {
+        if (!args[1].startsWith('@') && isNaN(args[1])) {
+            return ctx.reply('❌ Пожалуйста, укажите юзернейм через @ (например, /bio @username) или укажите ID.');
+        }
+        targetUsername = args[1].replace('@', '');
     } else {
         targetUsername = ctx.from.username;
     }
 
     if (!targetUsername) {
-        return ctx.reply('❌ Не удалось определить юзернейм. Убедитесь, что у пользователя он установлен в настройках Telegram.');
+        return ctx.reply('❌ У вас не установлен юзернейм в Telegram. Пожалуйста, ответьте на сообщение пользователя или укажите его юзернейм/ID через /bio @username.');
     }
 
     // Проверка на русские буквы
@@ -409,7 +412,21 @@ if (URL) {
 
 // API для сайта (проверка статуса пользователя)
 app.get('/api/user/:username', (req, res) => {
-    const query = req.params.username.replace('@', '');
+    let query = req.params.username;
+
+    // Считаем это числовым ID, если нет @ и это только цифры
+    const isId = !query.startsWith('@') && /^\d+$/.test(query);
+
+    // Если это не число (ID) и не начинается с @ - выдаем ошибку
+    if (!isId && !query.startsWith('@')) {
+        return res.status(400).json({
+            success: false,
+            message: 'Юзернейм должен начинаться с @',
+            isRegistered: false
+        });
+    }
+
+    query = query.replace('@', '');
 
     // Проверка на русские буквы
     if (/[а-яА-ЯёЁ]/.test(query)) {
