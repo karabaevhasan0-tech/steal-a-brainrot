@@ -24,7 +24,9 @@ let db = {
     users: {
         'Karabaev_Hasan': { roles: { 'Владелец': { note: '' } }, status: 'clean' }
     },
-    captcha: {}
+    captcha: {},
+    complaints: {}, // Список активных жалоб
+    states: {} // Состояния пользователей (для пошаговых команд)
 };
 
 if (fs.existsSync(DB_FILE)) {
@@ -335,6 +337,129 @@ bot.command('unguarante', (ctx) => {
     }
 });
 
+// Команда /complain
+bot.command('complain', (ctx) => {
+    const userId = ctx.from.id;
+    db.states[userId] = { step: 'waiting_for_complaint_text' };
+    ctx.reply('🛠 **Режим подачи жалобы**\n\nПожалуйста, опишите ситуацию: кто обманул (@username), на что и как это произошло.', { parse_mode: 'Markdown' });
+});
+
+// Обработка жалоб (текст и фото)
+bot.on(['text', 'photo'], async (ctx, next) => {
+    const userId = ctx.from.id;
+    const state = db.states[userId];
+
+    if (!state) return next();
+
+    // Шаг 1: Получение текста жалобы
+    if (state.step === 'waiting_for_complaint_text' && ctx.message.text) {
+        if (ctx.message.text.startsWith('/')) return next(); // Игнорируем команды
+
+        state.text = ctx.message.text;
+        state.step = 'waiting_for_evidence';
+        return ctx.reply('📷 Теперь отправьте фото-доказательство (скриншот переписки или трейда).\n\nЕсли фото нет, напишите /skip');
+    }
+
+    // Шаг 2: Получение фото или пропуск
+    if (state.step === 'waiting_for_evidence') {
+        if (ctx.message.text === '/skip') {
+            state.photoId = null;
+        } else if (ctx.message.photo) {
+            state.photoId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+        } else {
+            return ctx.reply('Пожалуйста, отправьте фото или напишите /skip');
+        }
+
+        // Завершаем сбор жалобы и отправляем владельцу
+        const complaintId = `comp_${Date.now()}`;
+        const complaintData = {
+            id: complaintId,
+            from: ctx.from.username || ctx.from.first_name,
+            fromId: userId,
+            text: state.text,
+            photoId: state.photoId,
+            status: 'pending'
+        };
+
+        db.complaints[complaintId] = complaintData;
+        delete db.states[userId];
+        saveDB();
+
+        ctx.reply('✅ Ваша жалоба отправлена на рассмотрение администрации. Ожидайте вердикта.');
+
+        // Отправка владельцу
+        const owner = Object.values(db.users).find(u => u.username === OWNER_USERNAME);
+        if (owner && owner.id) {
+            const adminMsg = `🆕 **НОВАЯ ЖАЛОБА**\n\nОт: @${complaintData.from}\nТекст: ${complaintData.text}`;
+            const keyboard = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: '✅ Принять (Забанить)', callback_data: `approve_${complaintId}` },
+                            { text: '❌ Отклонить', callback_data: `reject_${complaintId}` }
+                        ]
+                    ]
+                }
+            };
+
+            if (complaintData.photoId) {
+                await bot.telegram.sendPhoto(owner.id, complaintData.photoId, { caption: adminMsg, parse_mode: 'Markdown', ...keyboard });
+            } else {
+                await bot.telegram.sendMessage(owner.id, adminMsg, { parse_mode: 'Markdown', ...keyboard });
+            }
+        }
+        return;
+    }
+
+    return next();
+});
+
+// Обработка действий админа (Inline Buttons)
+bot.on('callback_query', async (ctx) => {
+    const data = ctx.callbackQuery.data;
+    const [action, complaintId] = data.split('_');
+    const complaint = db.complaints[complaintId];
+
+    if (!isOwner(ctx)) return ctx.answerCbQuery('❌ Только владелец может это делать.');
+
+    if (!complaint) return ctx.answerCbQuery('Жалоба не найдена.');
+
+    if (action === 'approve') {
+        complaint.status = 'approved';
+
+        // Извлекаем юзернейм из текста (простая логика поиска @username)
+        const match = complaint.text.match(/@(\w+)/);
+        if (match) {
+            const targetUsername = match[1];
+            if (!db.users[targetUsername]) db.users[targetUsername] = { roles: {}, status: 'clean' };
+
+            db.users[targetUsername].status = 'scammer';
+            db.users[targetUsername].roles['Скамер ❌'] = { note: `Жалоба принята от @${complaint.from}` };
+            saveDB();
+
+            ctx.editMessageCaption(`✅ Жалоба одобрена. @${targetUsername} добавлен в список скамеров.`).catch(() =>
+                ctx.editMessageText(`✅ Жалоба одобрена. @${targetUsername} добавлен в список скамеров.`)
+            );
+
+            // Уведомляем автора
+            bot.telegram.sendMessage(complaint.fromId, `🎉 Ваша жалоба на @${targetUsername} была одобрена! Пользователь наказан.`).catch(() => { });
+        } else {
+            ctx.answerCbQuery('Не удалось найти @username в тексте жалобы. Пропишите /scammer вручную.');
+        }
+    } else if (action === 'reject') {
+        complaint.status = 'rejected';
+        saveDB();
+        ctx.editMessageCaption('❌ Жалоба отклонена (недостаточно доказательств).').catch(() =>
+            ctx.editMessageText('❌ Жалоба отклонена (недостаточно доказательств).')
+        );
+
+        // Уведомляем автора
+        bot.telegram.sendMessage(complaint.fromId, `❌ Ваша жалоба была отклонена администрацией из-за нехватки доказательств.`).catch(() => { });
+    }
+
+    ctx.answerCbQuery();
+});
+
 // Логика капчи
 bot.on('text', (ctx, next) => {
     const userId = ctx.from.id;
@@ -357,6 +482,7 @@ bot.on('text', (ctx, next) => {
 // Настройка меню команд
 bot.telegram.setMyCommands([
     { command: 'bio', description: 'Проверить статус пользователя' },
+    { command: 'complain', description: 'Подать жалобу на скамера' },
     { command: 'id', description: 'Узнать свой ID или ID другого' },
     { command: 'allscammers', description: 'Список всех скамеров' },
     { command: 'allguarante', description: 'Список всех гарантов' },
