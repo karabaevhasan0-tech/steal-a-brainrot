@@ -169,12 +169,21 @@ bot.command('bio', (ctx) => {
         return ctx.reply('❌ Не удалось определить юзернейм. Убедитесь, что у пользователя он установлен в настройках Telegram.');
     }
 
-    const userData = db.users[targetUsername] || { roles: { 'Участник': { note: '' } }, status: 'clean' };
+    // Поиск пользователя в базе
+    let userData = db.users[targetUsername];
+    if (!userData) {
+        // Ищем по всем пользователям (вдруг ключ - это имя, а мы ищем по username)
+        userData = Object.values(db.users).find(u => u.username === targetUsername);
+    }
+
+    if (!userData) {
+        return ctx.reply(`❌ Пользователь @${targetUsername} не найден в нашей базе данных. Он должен хотя бы раз написать боту /start.`);
+    }
 
     let response = `👤 <b>Профиль:</b> @${targetUsername}\n\n`;
 
     response += `🎭 <b>Роли:</b> \n`;
-    const rolesList = userData.roles ? Object.entries(userData.roles) : [['Участник', { note: '' }]];
+    const rolesList = Object.entries(userData.roles || { 'Участник': { note: '' } });
     rolesList.forEach(([role, info]) => {
         response += `• ${role}${info.note ? ` (${info.note})` : ''}\n`;
     });
@@ -408,11 +417,11 @@ app.get('/api/user/:username', (req, res) => {
     }
 
     if (!userData) {
-        userData = {
-            roles: { 'Участник': { note: '' } },
-            status: 'clean',
-            username: query
-        };
+        return res.status(404).json({
+            success: false,
+            message: 'Пользователь не найден в базе данных',
+            isRegistered: false
+        });
     }
 
     const roleString = Object.entries(userData.roles || {})
