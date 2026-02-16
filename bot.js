@@ -32,8 +32,15 @@ let db = {
 if (fs.existsSync(DB_FILE)) {
     try {
         const data = fs.readFileSync(DB_FILE, 'utf8');
-        db = JSON.parse(data);
-        db.captcha = {}; // Капчу не сохраняем
+        const loadedDB = JSON.parse(data);
+        // Глубокое слияние для уверенности в наличии всех ключей
+        db = {
+            ...db,
+            ...loadedDB,
+            captcha: {}, // Капчу сбрасываем при перезагрузке
+            states: loadedDB.states || {} // Состояния жалоб сохраняем
+        };
+        console.log('✅ База данных успешно загружена');
     } catch (err) {
         console.error('Ошибка загрузки базы:', err);
     }
@@ -61,8 +68,11 @@ bot.use(async (ctx, next) => {
 // Middleware для проверки прав
 const isOwner = (ctx) => ctx.from && ctx.from.username === OWNER_USERNAME;
 
-// Регистрация всех пользователей, кто пишет боту
+// Middleware для логирования и регистрации
 bot.use(async (ctx, next) => {
+    if (ctx.message) console.log(`📩 [MSG] From: ${ctx.from.username || ctx.from.id}, Text: ${ctx.message.text || '[Photo/Other]'}`);
+    if (ctx.callbackQuery) console.log(`🔘 [BTN] From: ${ctx.from.username || ctx.from.id}, Data: ${ctx.callbackQuery.data}`);
+
     if (ctx.from) {
         const username = ctx.from.username || ctx.from.first_name;
         if (!db.users[username]) {
@@ -426,6 +436,10 @@ bot.on(['text', 'photo'], async (ctx, next) => {
 bot.on('callback_query', async (ctx) => {
     const data = ctx.callbackQuery.data;
     const userId = ctx.from.id;
+
+    // Инициализация если чего-то нет (защита от крашей)
+    if (!db.states) db.states = {};
+    if (!db.complaints) db.complaints = {};
 
     // Начало подачи жалобы
     if (data === 'start_complaint') {
