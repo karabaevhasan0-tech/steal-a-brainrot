@@ -169,6 +169,11 @@ bot.command('bio', (ctx) => {
         return ctx.reply('❌ Не удалось определить юзернейм. Убедитесь, что у пользователя он установлен в настройках Telegram.');
     }
 
+    // Проверка на русские буквы
+    if (/[а-яА-ЯёЁ]/.test(targetUsername)) {
+        return ctx.reply('❌ Юзернейм должен содержать только английские буквы, цифры и нижнее подчеркивание.');
+    }
+
     // Поиск пользователя в базе
     let userData = db.users[targetUsername];
     if (!userData) {
@@ -405,6 +410,15 @@ if (URL) {
 // API для сайта (проверка статуса пользователя)
 app.get('/api/user/:username', (req, res) => {
     const query = req.params.username.replace('@', '');
+
+    // Проверка на русские буквы
+    if (/[а-яА-ЯёЁ]/.test(query)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Юзернейм может содержать только английские буквы',
+            isRegistered: false
+        });
+    }
 
     // Поиск по username или по ID
     let userData = db.users[query];
