@@ -406,7 +406,7 @@ bot.on(['text', 'photo'], async (ctx, next) => {
         ctx.reply('✅ Ваша жалоба отправлена на рассмотрение администрации. Ожидайте вердикта.');
 
         // Отправка владельцу
-        const owner = Object.values(db.users).find(u => u.username === OWNER_USERNAME);
+        const owner = db.users[OWNER_USERNAME] || Object.values(db.users).find(u => u.username === OWNER_USERNAME);
         if (owner && owner.id) {
             const adminMsg = `🆕 **НОВАЯ ЖАЛОБА**\n\nОт: @${complaintData.from}\nТекст: ${complaintData.text}`;
             const keyboard = {
@@ -421,10 +421,12 @@ bot.on(['text', 'photo'], async (ctx, next) => {
             };
 
             if (complaintData.photoId) {
-                await bot.telegram.sendPhoto(owner.id, complaintData.photoId, { caption: adminMsg, parse_mode: 'Markdown', ...keyboard });
+                await bot.telegram.sendPhoto(owner.id, complaintData.photoId, { caption: adminMsg, parse_mode: 'Markdown', ...keyboard }).catch(e => console.error('Error sending photo to owner:', e));
             } else {
-                await bot.telegram.sendMessage(owner.id, adminMsg, { parse_mode: 'Markdown', ...keyboard });
+                await bot.telegram.sendMessage(owner.id, adminMsg, { parse_mode: 'Markdown', ...keyboard }).catch(e => console.error('Error sending msg to owner:', e));
             }
+        } else {
+            console.error('Owner not found or has no ID in database!');
         }
         return;
     }
@@ -500,6 +502,10 @@ bot.on('callback_query', async (ctx) => {
 bot.on('text', (ctx, next) => {
     const userId = ctx.from.id;
     const challenge = db.captcha[userId];
+    const user = ctx.from.username || ctx.from.id;
+
+    // Владельцу капча не нужна
+    if (isOwner(ctx)) return next();
 
     if (challenge && !challenge.verified) {
         if (ctx.message.text === String(challenge.answer)) {
