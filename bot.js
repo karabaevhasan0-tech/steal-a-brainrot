@@ -153,7 +153,7 @@ bot.command('igiveout', (ctx) => {
 });
 
 // Команда /bio
-bot.command('bio', (ctx) => {
+bot.command('bio', async (ctx) => {
     const args = ctx.message.text.split(' ');
     let targetUsername;
 
@@ -180,12 +180,23 @@ bot.command('bio', (ctx) => {
     // Поиск пользователя в базе
     let userData = db.users[targetUsername];
     if (!userData) {
-        // Ищем по всем пользователям (вдруг ключ - это имя, а мы ищем по username)
         userData = Object.values(db.users).find(u => u.username === targetUsername);
     }
 
+    // Если нет в базе, пробуем запросить у Telegram
     if (!userData) {
-        return ctx.reply(`❌ Пользователь @${targetUsername} не найден в нашей базе данных. Он должен хотя бы раз написать боту /start.`);
+        try {
+            const chat = await ctx.telegram.getChat(`@${targetUsername}`);
+            userData = {
+                roles: { 'Участник': { note: '' } },
+                status: 'clean',
+                username: chat.username || targetUsername,
+                firstName: chat.first_name || targetUsername,
+                isFromTelegram: true
+            };
+        } catch (err) {
+            return ctx.reply(`❌ Пользователь @${targetUsername} не найден в Telegram.`);
+        }
     }
 
     let response = `👤 <b>Профиль:</b> @${targetUsername}\n\n`;
@@ -197,6 +208,9 @@ bot.command('bio', (ctx) => {
     });
 
     response += `\n🛡️ <b>Проверка:</b> ${userData.status === 'scammer' ? '<pre>❌ СКАМЕР</pre>' : '✅ Чист'}`;
+    if (userData.isFromTelegram) {
+        response += `\n\nℹ️ <i>Пользователь еще не зарегистрирован в базе бота, но существует в Telegram.</i>`;
+    }
 
     ctx.reply(response, { parse_mode: 'HTML' });
 });
@@ -411,7 +425,7 @@ if (URL) {
 }
 
 // API для сайта (проверка статуса пользователя)
-app.get('/api/user/:username', (req, res) => {
+app.get('/api/user/:username', async (req, res) => {
     let query = req.params.username;
 
     // Считаем это числовым ID, если нет @ и это только цифры
@@ -447,7 +461,26 @@ app.get('/api/user/:username', (req, res) => {
         );
     }
 
-    if (!userData) {
+    // Если в базе нет, пробуем найти через Telegram API (только для юзернеймов)
+    if (!userData && isNaN(query)) {
+        try {
+            const chat = await bot.telegram.getChat(`@${query}`);
+            userData = {
+                roles: { 'Участник': { note: '' } },
+                status: 'clean',
+                username: chat.username || query,
+                firstName: chat.first_name || query
+            };
+        } catch (err) {
+            // Если Telegram тоже не нашел
+            return res.status(404).json({
+                success: false,
+                message: 'Такого пользователя не существует',
+                isRegistered: false
+            });
+        }
+    } else if (!userData) {
+        // Если это был ID и его нет в базе
         return res.status(404).json({
             success: false,
             message: 'Такого пользователя не существует',
