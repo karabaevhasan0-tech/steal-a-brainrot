@@ -50,7 +50,7 @@ export default function UserSearch() {
 
         setLoading(true);
         try {
-            if (!query.startsWith('@')) {
+            if (!query.startsWith('@') && isNaN(query)) {
                 setResult({ error: "Юзернейм должен начинаться с @" });
                 setLoading(false);
                 return;
@@ -59,9 +59,17 @@ export default function UserSearch() {
             const username = query.trim();
             const API_BASE_URL = import.meta.env.VITE_API_URL || "https://brainrot-bot-p20j.onrender.com";
             const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
-            if (!response.ok) throw new Error("Server error");
-
             const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    setResult({ error: "Такого юзера не существует" });
+                } else {
+                    setResult({ error: data.message || "Ошибка сервера" });
+                }
+                return;
+            }
+
             setResult(data);
         } catch (error) {
             console.error("Search error:", error);

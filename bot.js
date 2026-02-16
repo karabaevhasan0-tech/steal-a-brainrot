@@ -450,7 +450,7 @@ app.get('/api/user/:username', (req, res) => {
     if (!userData) {
         return res.status(404).json({
             success: false,
-            message: 'Пользователь не найден в базе данных',
+            message: 'Такого пользователя не существует',
             isRegistered: false
         });
     }
