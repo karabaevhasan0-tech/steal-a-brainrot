@@ -472,10 +472,10 @@ app.get('/api/user/:username', async (req, res) => {
                 firstName: chat.first_name || query
             };
         } catch (err) {
-            // Если Telegram тоже не нашел
+            // Если Telegram тоже не нашел (или нет прав видеть)
             return res.status(404).json({
                 success: false,
-                message: 'Такого пользователя не существует',
+                message: 'Пользователь не найден. Он должен запустить бота или быть участником нашего чата.',
                 isRegistered: false
             });
         }

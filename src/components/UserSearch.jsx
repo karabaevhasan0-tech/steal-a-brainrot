@@ -63,7 +63,7 @@ export default function UserSearch() {
 
             if (!response.ok) {
                 if (response.status === 404) {
-                    setResult({ error: "Такого юзера не существует" });
+                    setResult({ error: "Пользователь не найден. Он должен быть участником чата или запустить бота." });
                 } else {
                     setResult({ error: data.message || "Ошибка сервера" });
                 }
