@@ -339,9 +339,17 @@ bot.command('unguarante', (ctx) => {
 
 // Команда /complain
 bot.command('complain', (ctx) => {
-    const userId = ctx.from.id;
-    db.states[userId] = { step: 'waiting_for_complaint_text' };
-    ctx.reply('🛠 **Режим подачи жалобы**\n\nПожалуйста, опишите ситуацию: кто обманул (@username), на что и как это произошло.', { parse_mode: 'Markdown' });
+    ctx.reply('⁉️ **Вы хотите подать жалобу?**\n\nЕсли вас обманул игрок, стажер или гарант, вы можете оставить официальную жалобу администрации.', {
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: '✅ Да, пожаловаться', callback_data: 'start_complaint' },
+                    { text: '❌ Нет, не хочу', callback_data: 'cancel_complaint' }
+                ]
+            ]
+        }
+    });
 });
 
 // Обработка жалоб (текст и фото)
@@ -414,9 +422,23 @@ bot.on(['text', 'photo'], async (ctx, next) => {
     return next();
 });
 
-// Обработка действий админа (Inline Buttons)
+// Обработка действий (Inline Buttons)
 bot.on('callback_query', async (ctx) => {
     const data = ctx.callbackQuery.data;
+    const userId = ctx.from.id;
+
+    // Начало подачи жалобы
+    if (data === 'start_complaint') {
+        db.states[userId] = { step: 'waiting_for_complaint_text' };
+        await ctx.answerCbQuery();
+        return ctx.editMessageText('🛠 **Режим подачи жалобы**\n\nПожалуйста, опишите ситуацию: кто обманул (@username), на что и как это произошло.', { parse_mode: 'Markdown' });
+    }
+
+    if (data === 'cancel_complaint') {
+        await ctx.answerCbQuery('Отмена');
+        return ctx.editMessageText('❌ Вы отменили подачу жалобы.');
+    }
+
     const [action, complaintId] = data.split('_');
     const complaint = db.complaints[complaintId];
 
@@ -466,13 +488,12 @@ bot.on('text', (ctx, next) => {
     const challenge = db.captcha[userId];
 
     if (challenge && !challenge.verified) {
-        const userAnswer = parseInt(ctx.message.text);
-        if (userAnswer === challenge.answer) {
+        if (ctx.message.text === String(challenge.answer)) {
             challenge.verified = true;
-            ctx.reply('✅ Проверка пройдена! Теперь ты полноценный участник проекта.');
+            ctx.reply('✅ Проверка пройдена! Теперь вы можете пользоваться всеми функциями бота.');
             ctx.reply('🔗 Ссылка на наш основной чат: https://t.me/TradeGameChat\n\nМожешь использовать меню команд / для проверки профиля.');
         } else {
-            ctx.reply('❌ Неверно. Попробуй еще раз: сколько будет ' + challenge.q + '?');
+            ctx.reply(`❌ Неверно. Попробуй еще раз: сколько будет ${challenge.q}?`);
         }
         return;
     }
@@ -520,16 +541,17 @@ bot.start((ctx) => {
         verified: false
     };
 
-    const welcomeMsg = `👋 Привет, ${ctx.from.first_name}!\n\n` +
+    const welcomeMsg = `👋 **Привет, ${ctx.from.first_name}!**\n\n` +
         `🤖 Я — защитник **Steal A Brainrot**.\n` +
-        `✅ Ты успешно зарегистрирован в системе нашей базы!\n\n` +
-        `Чтобы пользоваться ботом и попасть в чат, подтверди, что ты не робот 🤖\n\n` +
-        `🌐 **ВХОД НА САЙТ (Авто-логин):**\n` +
-        `🔗 [Нажми сюда, чтобы войти в аккаунт](https://steal-a-brainrot-virid.vercel.app/?auth=${ctx.from.username || ctx.from.first_name})\n\n` +
-        `💡 Используй /help, чтобы увидеть список команд.\n\n` +
-        `Сколько будет ${a} + ${b}?`;
+        `✅ Вы успешно зарегистрированы в системе!\n\n` +
+        `Чтобы получить полный доступ, подтвердите, что вы не робот. 🤖\n\n` +
+        `📝 **ЗАДАНИЕ:**\n` +
+        `Сколько будет **${a} + ${b}**?\n` +
+        `_(Напишите ответ цифрами в чат)_\n\n` +
+        `🌐 **ЛИЧНЫЙ КАБИНЕТ:**\n` +
+        `🔗 [Войти на сайт](https://steal-a-brainrot-virid.vercel.app/?auth=${ctx.from.username || ctx.from.first_name})`;
 
-    ctx.reply(welcomeMsg);
+    ctx.reply(welcomeMsg, { parse_mode: 'Markdown' });
 });
 
 // Обработка ошибок
