@@ -195,7 +195,7 @@ bot.command('bio', async (ctx) => {
                 isFromTelegram: true
             };
         } catch (err) {
-            return ctx.reply(`❌ Пользователь @${targetUsername} не найден в Telegram.`);
+            return ctx.reply('❌ Пользователь не найден. Он должен быть участником чата или запустить бота.');
         }
     }
 
