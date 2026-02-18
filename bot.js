@@ -470,7 +470,9 @@ bot.on('callback_query', async (ctx) => {
         return ctx.editMessageText('❌ Вы отменили подачу жалобы.');
     }
 
-    const [action, complaintId] = data.split('_');
+    const parts = data.split('_');
+    const action = parts[0];
+    const complaintId = parts.slice(1).join('_');
     const complaint = db.complaints[complaintId];
 
     if (!isOwner(ctx)) return ctx.answerCbQuery('❌ Только владелец может это делать.');
