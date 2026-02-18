@@ -66,7 +66,10 @@ bot.use(async (ctx, next) => {
 });
 
 // Middleware для проверки прав
-const isOwner = (ctx) => ctx.from && ctx.from.username === OWNER_USERNAME;
+const isOwner = (ctx) => {
+    if (!ctx.from || !ctx.from.username) return false;
+    return ctx.from.username.toLowerCase() === OWNER_USERNAME.toLowerCase();
+};
 
 // Middleware для логирования и регистрации
 bot.use(async (ctx, next) => {
@@ -406,7 +409,11 @@ bot.on(['text', 'photo'], async (ctx, next) => {
         ctx.reply('✅ Ваша жалоба отправлена на рассмотрение администрации. Ожидайте вердикта.');
 
         // Отправка владельцу
-        const owner = db.users[OWNER_USERNAME] || Object.values(db.users).find(u => u.username === OWNER_USERNAME);
+        const owner = Object.values(db.users).find(u =>
+            (u.username && u.username.toLowerCase() === OWNER_USERNAME.toLowerCase()) ||
+            u.id === 8371175143 // Хардкод ID для надежности
+        );
+
         if (owner && owner.id) {
             const adminMsg = `🆕 **НОВАЯ ЖАЛОБА**\n\nОт: @${complaintData.from}\nТекст: ${complaintData.text}`;
             const keyboard = {
@@ -420,13 +427,21 @@ bot.on(['text', 'photo'], async (ctx, next) => {
                 }
             };
 
-            if (complaintData.photoId) {
-                await bot.telegram.sendPhoto(owner.id, complaintData.photoId, { caption: adminMsg, parse_mode: 'Markdown', ...keyboard }).catch(e => console.error('Error sending photo to owner:', e));
-            } else {
-                await bot.telegram.sendMessage(owner.id, adminMsg, { parse_mode: 'Markdown', ...keyboard }).catch(e => console.error('Error sending msg to owner:', e));
+            try {
+                if (complaintData.photoId) {
+                    await bot.telegram.sendPhoto(owner.id, complaintData.photoId, { caption: adminMsg, parse_mode: 'Markdown', ...keyboard });
+                } else {
+                    await bot.telegram.sendMessage(owner.id, adminMsg, { parse_mode: 'Markdown', ...keyboard });
+                }
+            } catch (e) {
+                console.error('Ошибка отправки жалобы владельцу:', e.message);
+                // Если не получилось отправить по ID из базы, пробуем хардкод
+                if (owner.id !== 8371175143) {
+                    await bot.telegram.sendMessage(8371175143, adminMsg, { parse_mode: 'Markdown', ...keyboard }).catch(() => { });
+                }
             }
         } else {
-            console.error('Owner not found or has no ID in database!');
+            console.error('Владелец не найден в базе данных!');
         }
         return;
     }
